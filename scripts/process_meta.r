@@ -10,6 +10,9 @@ WORKING_DIR = "/Users/joanneong/Desktop/working_dir"
 # OPTIONAL: Specify name of meta file
 META_FILE = "meta.csv"
 
+# OPTIONAL: Specify date format used in meta file ("ymd" or "dmy" etc)
+META_FILE_DATE_FORMAT = "dmy"
+
 # OPTIONAL: Specify delimiter used for manual ids
 DELIMITER = "_"
 

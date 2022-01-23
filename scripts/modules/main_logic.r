@@ -31,7 +31,7 @@ process_one_folder <- function(folder) {
     print("[INFO]: Checkpoint 3 - SUCCESS - .wav files have been sorted based on manual ids.")
 
     print("[INFO]: Matching GPS data...")
-    match_gps_data(expanded_meta, HANDHELD_GPS_FILE, SKIPPED_ROWS)
+    match_gps_data(expanded_meta, META_FILE_DATE_FORMAT, HANDHELD_GPS_FILE, SKIPPED_ROWS)
     print("[INFO]: Checkpoint 4 - SUCCESS - GPS data has been matched.")
 }
 

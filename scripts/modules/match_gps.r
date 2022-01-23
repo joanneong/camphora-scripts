@@ -14,9 +14,9 @@ library(lubridate, warn.conflicts=FALSE)
 ######################################################################
 
 # Format time data in mobile gps data row to POSIXct type
-format_mobile_time <- function(mobile_gps) {
+format_mobile_time <- function(mobile_gps, mobile_gps_date_format) {
   # Parse the date in the data row
-  parsed_date <- parse_date_time(mobile_gps['DATE'], orders=c("ymd", "dmy"))
+  parsed_date <- parse_date_time(mobile_gps['DATE'], mobile_gps_date_format)
   
   # Combine date and time columns in mobile gps into a datetime column
   datetime <- paste(parsed_date, mobile_gps['TIME'])
@@ -27,9 +27,9 @@ format_mobile_time <- function(mobile_gps) {
 
 # Find index in handheld gps data with the closest time to the current
 # mobile gps data row
-find_closest_idx <- function(mobile_gps_row, handheld_gps) {
-  mobile_gps_time <- format_mobile_time(mobile_gps_row)
-  time_diff <- abs(mobile_gps_time - handheld_gps$CLEANED.DATETIME)
+find_closest_idx <- function(mobile_gps_row, mobile_gps_date_format, handheld_gps) {
+  mobile_gps_time <- format_mobile_time(mobile_gps_row, mobile_gps_date_format)
+  time_diff <- abs(difftime(mobile_gps_time, handheld_gps$CLEANED.DATETIME, units="secs"))
   min_diff_idx <- which.min(time_diff)
 }
 
@@ -45,7 +45,7 @@ format_handheld_time <- function(handheld_gps) {
 }
 
 # Process gps data files
-match_gps_data <- function(mobile_gps, handheld_gps_file, skipped_rows) {
+match_gps_data <- function(mobile_gps, mobile_gps_date_format, handheld_gps_file, skipped_rows) {
   # Read csv file as data frame
   handheld_gps = read.csv(handheld_gps_file, skip=skipped_rows)
 
@@ -53,7 +53,9 @@ match_gps_data <- function(mobile_gps, handheld_gps_file, skipped_rows) {
   handheld_gps = format_handheld_time(handheld_gps)
   
   # Process each row in mobile gps data
-  closest_idx <- apply(mobile_gps, 1, find_closest_idx, handheld_gps=handheld_gps)
+  closest_idx <- apply(mobile_gps, 1, find_closest_idx, 
+                       mobile_gps_date_format=mobile_gps_date_format, 
+                       handheld_gps=handheld_gps)
   
   # Replace latitudes and longitudes based on closest indices
   mobile_gps$LATITUDE <- handheld_gps$lat[closest_idx]
